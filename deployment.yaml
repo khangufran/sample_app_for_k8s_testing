@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: sample_app_for_k8s_testing
+  name: sample_app_for_k8s_testing
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sample_app_for_k8s_testing
+  template:
+    metadata:
+      labels:
+        app: sample_app_for_k8s_testing
+        app.kubernetes.io/name: sample_app_for_k8s_testing
+    spec:
+      imagePullSecrets:
+        - name: private-registry
+      containers:
+        - image: khhangufran/sample_app_for_k8s_testing:latest
+          name: main
+          imagePullPolicy: Always
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 500Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sample_app_for_k8s_testing-service
+spec:
+  type: NodePort
+  selector:
+    app: sample_app_for_k8s_testing
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
+      nodePort: 30007
